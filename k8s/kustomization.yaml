@@ -8,3 +8,10 @@ resources:
   - deployment.yaml
   - service.yaml
   - ingress.yaml
+
+# Override the image tag to pin a specific release.
+# Replace OWNER with your GitHub username/org and TAG with the desired tag
+# (e.g. sha-abc1234 or v1.0.0). The workflow produces tags of both forms.
+images:
+  - name: ghcr.io/OWNER/cut-tracker
+    newTag: latest

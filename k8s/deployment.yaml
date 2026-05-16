@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: app
-          image: cut-tracker:latest
+          image: ghcr.io/OWNER/cut-tracker:latest
           ports:
             - containerPort: 8080
           resources:
