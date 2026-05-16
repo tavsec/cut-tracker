@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cut-tracker
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cut-tracker
+  template:
+    metadata:
+      labels:
+        app: cut-tracker
+    spec:
+      containers:
+        - name: app
+          image: cut-tracker:latest
+          ports:
+            - containerPort: 8080
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          envFrom:
+            - secretRef:
+                name: cut-tracker-secrets
+          env:
+            - name: DB_DATABASE
+              value: /var/www/html/database/sqlite/cut.sqlite
+            - name: APP_ENV
+              value: production
+            - name: LOG_CHANNEL
+              value: stderr
+          volumeMounts:
+            - name: sqlite-data
+              mountPath: /var/www/html/database/sqlite
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+      volumes:
+        - name: sqlite-data
+          persistentVolumeClaim:
+            claimName: cut-tracker-sqlite
